@@ -1,5 +1,6 @@
 import random, sys
 
+# ASCII
 HEARTS = chr(9829)
 DIAMONDS = chr(9830)
 SPADES = chr(9824)
@@ -21,17 +22,19 @@ def main():
         In case of a tie, the bet is returned to the player.
         The dealer stops hitting at 17.''')
 
-    money = 5000
-    while True:
-        if money <= 0:
+    money = 5000 # Starting money
+    while True: # Main game loop
+        if money <= 0: # No more money
             print("You're broke!")
             print("Good thing you weren't playing with real money.")
             print("Thanks for playing!")
             sys.exit()
         
+        # Show current money and get new bet
         print('Money:', money)
         bet = getBet(money)
 
+        # Make new deck and deal to player and dealer
         deck = getDeck()
         dealerHand = [deck.pop(), deck.pop()]
         playerHand = [deck.pop(), deck.pop()]
@@ -46,13 +49,13 @@ def main():
 
             move = getMove(playerHand, money - bet)
 
-            if move == 'D':
+            if move == 'D': # Player doubles down
                 additionalBet = getBet(min(bet, (money - bet)))
                 bet += additionalBet
                 print('Bet increased to {}.'.format(bet))
                 print('Bet:', bet)
 
-            if move in ('H', 'D'):
+            if move in ('H', 'D'): # Player hits
                 newCard = deck.pop()
                 rank, suit = newCard
                 print('You drew a {} of {}.'.format(rank, suit))
@@ -61,9 +64,10 @@ def main():
                 if getHandValue(playerHand) > 21:
                     continue
 
-            if move in ('S', 'D'):
+            if move in ('S', 'D'): # Player stands
                 break
 
+        # Dealer actions
         if getHandValue(playerHand) <= 21:
             while getHandValue(dealerHand) < 17:
                 print('Dealer hits...')
@@ -77,6 +81,7 @@ def main():
             
         displayHands(playerHand, dealerHand, True)
 
+        # Determine final score
         playerValue = getHandValue(playerHand)
         dealerValue = getHandValue(dealerHand)
         if dealerValue > 21:
@@ -94,6 +99,7 @@ def main():
         input("Press Enter to continue...")
         print('\n\n')
 
+# Get new bet or quit
 def getBet(maxBet):
     while True:
         print("How much would you like to bet? (1-{}, or QUIT)".format(maxBet))
@@ -109,6 +115,7 @@ def getBet(maxBet):
         if 1 <= bet <= maxBet:
             return bet
 
+# Form new deck
 def getDeck():
     deck = []
     for suit in (HEARTS, DIAMONDS, SPADES, CLUBS):
@@ -131,6 +138,7 @@ def displayHands(playerHand, dealerHand, showDealerHand):
     print('PLAYER:', getHandValue(playerHand))
     displayCards(playerHand)
 
+# Determine hand score and use Ace intelligently
 def getHandValue(cards):
     value = 0
     numberOfAces = 0
@@ -169,6 +177,7 @@ def displayCards(cards):
     for row in rows:
         print(row)
 
+# Get player input for next move
 def getMove(playerHand, money):
     while True:
         moves = ['(H)it', '(S)tand']
